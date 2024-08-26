@@ -1,3 +1,9 @@
+# Description: Main file for the Neuroweaver GUI application.
+# To run the GUI, execute this file using Python 3.10 or higher.
+
+# The main file starts the main menu of the GUI application.
+# From the main menu, you can create a graph, load a graph, and set configurations.
+
 import sys
 sys.path.extend("../..")  #add ../.. to python path
 sys.path.extend("..")
@@ -8,6 +14,7 @@ from GUI.createGraph import createGraph
 from GUI.configPage import ConfigEditor
 
 class MainWindow(QMainWindow):
+    """Main window class for the Neuroweaver application interface."""
     def __init__(self):
         super().__init__()
         self.graph = None
@@ -45,6 +52,7 @@ class MainWindow(QMainWindow):
         self.show()
     
     def setConfig(self):
+        """Open a configuration editor window positioned adjacent to the main window."""
         pos = self.pos()
         size = self.size()
         x,y,h = pos.x(),pos.y(),size.height()
@@ -85,40 +93,26 @@ class MainWindow(QMainWindow):
         self.layout.addWidget(setConfig)
 
     def createGraph(self):
-        #location of window's top right corner, width, height
+        """Opens create graph GUI based on the current configuration and position of the main window."""
         pos = self.pos()
         size = self.size()
         x,y,h = pos.x(),pos.y(),size.height()
         self.graph = createGraph({'x':x+size.width(),'y':y+27,'h':h,'config':self.config})
         self.graph.show()
 
-    # def load(self):
-
-
-    #     with open('components.json', 'r') as file:
-    #         components = json.load(file)
-    #     with open('flows.json', 'r') as file:
-    #         flows = json.load(file)
-        
-    #     self.createGraph()
-    #     for name, componentInfo in components.items():
-    #         self.graph.addNodeGUI(componentInfo)
-    #     for flow in flows:
-    #         self.graph.flows.append(flow)
-    #         self.graph.drawEdge(flow[1],flow[3])
-
     def load(self):
-        # Open a dialog to select a directory
+        """Load graph components and flows from a user-selected directory."""
         folder_path = QFileDialog.getExistingDirectory(self, "Select Folder Containing Graph Files")
         if folder_path:
-            # Attempt to load components.json and flows.json from the selected folder
             try:
+                # These are given fixed names for clarity, but you can change them as needed. 
+                # If changed, ensure you change the save method in createGraph.py as well.
                 with open(f'{folder_path}/nodes.json', 'r') as file:
                     components = json.load(file)
                 with open(f'{folder_path}/flows.json', 'r') as file:
                     flows = json.load(file)
                 
-                # After successful loading, create the graph and populate it
+                # After successful loading, create the visuals of nodes and flows
                 self.createGraph()  # This might need to be adjusted based on how you manage graph instances
                 for name, componentInfo in components.items():
                     self.graph.addNodeGUI(componentInfo)
@@ -127,7 +121,7 @@ class MainWindow(QMainWindow):
                     self.graph.drawEdge(flow[1], flow[3])
 
             except FileNotFoundError:
-                # If the files are not found, show an error dialog
+                # In the selected directory, either nodes.json or flows.json was not found
                 fileErrorDialog = QDialog(self)
                 fileErrorDialog.setWindowTitle("Error")
                 fileErrorDialog.layout = QVBoxLayout()

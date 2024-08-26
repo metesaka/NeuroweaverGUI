@@ -1,3 +1,10 @@
+# Opens the graph editor
+# This creates the GUI for drawing and editing a graph. It is a separate window that can be opened from the main window.
+# The graph is created by adding components and flows between them. The components are draggable and can be connected by clicking and dragging between them.
+# Edges are created by clicking the nodes consecutively.
+# Nodes can be edited by double-clicking them, which opens a dialog to edit the node's properties.
+# The graph can be saved to files.
+
 import sys
 sys.path.extend(["../..", "..","../ppo"])
 import json
@@ -11,7 +18,7 @@ import psutil
 from PyQt5.QtGui import QPainter, QPen, QPainterPath
 
 class createGraph(QMainWindow):
-
+    """This class represents the window for creating and editing graphical representations of the component-flow model. It allows users to add, connect, and configure nodes (components) and edges (flows)."""
     def __init__(self,inputs):
         super().__init__()
         x,y,h = inputs['x'],inputs['y'],inputs['h']
@@ -83,15 +90,17 @@ class createGraph(QMainWindow):
         self.layout.addWidget(self.saveButton)
     
     def initNW(self):
+        '''Initializes Neuroweaver related data structures'''
         self.flowState = False
-        self.components = {}
-        self.flows = []
+        self.components = {} # Dictionary to store component information, this will be used to create the neuroweaver components in the backend
+        self.flows = [] # List to store flow information, this will be used to create the neuroweaver flows in the backend
         self.currentNode = None
         self.nodesGUI = []
         self.edgesGUI = []
 
     def addNodeGUI(self, componentInfo):
-        num_per_row = 3  
+        '''Adds a new node to the GUI and places in an appropriate position, also stores the component information in the components dictionary'''
+        num_per_row = 3  # Number of nodes to display per row, adjust as needed
         index = len(self.nodesGUI)
         row = index // num_per_row
         column = index % num_per_row
@@ -108,6 +117,7 @@ class createGraph(QMainWindow):
         }
 
     def addNode(self):
+        '''Opens a dialog to take components details from the user and directs the information to addNodeGUI'''
         dialog = NewNodeDialog(self.config)
         if dialog.exec_() == QDialog.Accepted:
             # print(dialog.get_inputs())
@@ -117,6 +127,7 @@ class createGraph(QMainWindow):
             print("Dialog canceled")
       
     def addFlow(self,start_node, end_node):
+        '''Opens a dialog to take flow details from the user and stores the information in the flows list'''
         start_node_name = None
         end_node_name = None
         for name, node in self.components.items():
@@ -137,6 +148,7 @@ class createGraph(QMainWindow):
         return True
     
     def FlowState(self):
+        '''Changes the state of the flow button, if true, the button will be red and the user can add flows between nodes''' 
         if self.flowState:
             self.flowState = False
             self.addFlowButton.setStyleSheet("background-color: grey")
@@ -146,6 +158,7 @@ class createGraph(QMainWindow):
             self.addFlowButton.setStyleSheet("background-color: red")
 
     def mousePressEvent(self, event):
+        '''detects if a node is clicked. Contains node creation and edge creation logic'''
         super().mousePressEvent(event)
         if self.flowState:
             found_node = None
@@ -174,6 +187,7 @@ class createGraph(QMainWindow):
                     self.currentNode = None
 
     def drawEdge(self,startNodeName,endNodeName):
+        '''Locates the start and end points of the edge and stores the edge in the edgesGUI list'''
         startNode = self.components[startNodeName]['GUI']
         self.start_point = startNode.pos() + QPoint(startNode.width() // 2, startNode.height() // 2)
         endNode = self.components[endNodeName]['GUI']
@@ -183,11 +197,13 @@ class createGraph(QMainWindow):
 
 
     def mouseMoveEvent(self, event):
+        '''Updates the end point of the edge as the mouse is moved, to be used when the node moves'''
         if self.currentNode:
             self.end_point = event.pos()
             self.update()
 
     def mouseDoubleClickEvent(self, event):
+        '''Opens a dialog to edit the node properties when a node is double-clicked'''
         super().mouseDoubleClickEvent(event)
         found_node = None
         for node in self.nodesGUI:
@@ -201,23 +217,23 @@ class createGraph(QMainWindow):
                 if node['GUI'] == found_node:
                     dialog = ComponentConfigDialog(node['Info'], self.config)
                     result = dialog.exec_()
-                    if result == 1:
+                    if result == 1: # The user changed the node type or input-output configuration. Therefore all connections should be deleted
                         updated_info = dialog.get_inputs()
                         node['Info'].update(updated_info)
                         print(f"Updated {name} with new information")
                         self.deleteComponentAndFlows(name)
                         if name != updated_info['Name']:
                             changed = (name, updated_info['Name'])
-                    elif result == 2:  # Custom code indicating deletion
+                    elif result == 2:  # The user wants to delete the node
                         toBeDeleted = name
                         found_node.setParent(None)
                         self.nodesGUI.remove(found_node)
                         print(f"Deleted {name}")
-                    elif result == 3: 
+                    elif result == 3: # The user changed the name of the node, only change the appearance of the node
                         updated_info = dialog.get_inputs()
                         node['Info'].update(updated_info)
                         changed = (name, updated_info['Name'])
-                    elif result == 4:
+                    elif result == 4: # The user changed the parameters of the component
                         updated_info = dialog.get_inputs()
                         node['Info'].update(updated_info)
                     else:
@@ -227,7 +243,7 @@ class createGraph(QMainWindow):
             if toBeDeleted:
                 self.deleteComponentAndFlows(toBeDeleted)
                 del self.components[toBeDeleted]
-            if changed:
+            if changed: # change the name, update the appearance, and dictionary key
                 for flow in self.flows:
                     if flow[1] == changed[0]:
                         flow[1] = changed[1]
@@ -256,6 +272,7 @@ class createGraph(QMainWindow):
         self.update()  # Refresh the GUI to reflect these changes
     
     def paintEvent(self, event):
+        '''Draws the edges between the nodes'''
         super().paintEvent(event)
         painter = QPainter(self)
         pen = QPen(Qt.white, 2)
@@ -274,6 +291,7 @@ class createGraph(QMainWindow):
             painter.drawPath(path)
 
     def save(self):
+        '''Saves the graph to a user-selected directory as components.json and flows.json'''
         # Open a dialog to select a directory
         folder_path = QFileDialog.getExistingDirectory(self, "Select Folder to Save Graph")
         if not folder_path:
@@ -296,18 +314,7 @@ class createGraph(QMainWindow):
             QMessageBox.critical(self, "Save Failed", f"Failed to save files: {str(e)}")
 
     def runNeuroweaver(self):
-        runData = {}
-        runData['config'] = self.config
-        runData['components'] = {}
-        for name, node in self.components.items():
-            runData['components'][name] = node['Info']
-        runData['flows'] = self.flows
-        with open('GUI/temp.json', 'w') as f:
-            json.dump(runData, f)
-
-        self.NeuroweaverProcess = subprocess.Popen(["python3", "GUI/runner.py"])
-    
-    def runNeuroweaver(self):
+        '''Starts the Neuroweaver workflow'''
         print("Since the NeuroWeaver code is not available, this button does nothing.")
         # if self.NeuroweaverProcess is None:
         #     # Start the process
@@ -320,6 +327,7 @@ class createGraph(QMainWindow):
         #     self.stopNeuroweaver()
 
     def stopNeuroweaver(self):
+        '''Stops the Neuroweaver workflow'''
         print("Since the NeuroWeaver code is not available, this button does nothing.")
         # if self.NeuroweaverProcess:
         #     parent = psutil.Process(self.NeuroweaverProcess.pid)

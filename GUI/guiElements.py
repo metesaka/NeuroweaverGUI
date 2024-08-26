@@ -1,8 +1,11 @@
+# This file contains the definition of the DraggableNode class, which is a QLabel that can be moved around the screen.
+
 from PyQt5.QtCore import pyqtSignal, Qt, QPoint
 from PyQt5.QtGui import QFontMetrics, QFont, QLinearGradient, QPalette, QColor, QBrush
 from PyQt5.QtWidgets import QLabel
 
 class DraggableNode(QLabel):
+    """A draggable node that can be moved around the screen."""
     moved = pyqtSignal()
 
     def __init__(self, parent=None, name=None):

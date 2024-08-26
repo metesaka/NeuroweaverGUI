@@ -1,3 +1,5 @@
+# This file is used to create a configuration editor widget that allows the user to edit a JSON configuration file.
+
 import sys
 sys.path.extend("..")
 import json
@@ -5,6 +7,7 @@ from PyQt5.QtWidgets import QMessageBox,QFileDialog,QApplication,QDialog, QWidge
 from PyQt5.QtCore import pyqtSignal
 
 class ConfigEditor(QWidget):
+    '''A configuration editor widget that allows the user to edit a JSON configuration file.'''
     closed = pyqtSignal()
     def __init__(self,inputs):
         super().__init__()
@@ -84,27 +87,6 @@ class ConfigEditor(QWidget):
         else:
             print("Save operation cancelled.")
 
-
-    # def saveConfig(self):
-    #     for key, lineEdit in self.entries.items():
-    #         self.config[key] = lineEdit.text()
-
-    #     # ask for location to save the file
-    #     options = QFileDialog.Options()
-    #     options |= QFileDialog.DontUseNativeDialog
-    #     fileName, _ = QFileDialog.getSaveFileName(self, "Save Configuration", "", "JSON Files (*.json);;All Files (*)", options=options)
-    #     if not fileName:
-    #         print("Configuration not saved.")
-    #     else:
-    #         with open(fileName, 'w') as file:
-    #             json.dump(self.config, file, indent=4)
-    #         self.configFile = fileName
-    #         # Dialog to tell the user that the configuration was saved
-    #         msg = QMessageBox()
-    #         msg.setWindowTitle("Success")
-    #         msg.setText("Configuration saved to:\n" + self.configFile)
-    #         msg.exec_()
-    #     # print("Configuration saved.")
     
     def accept(self):
         self.close()
@@ -120,6 +102,7 @@ class ConfigEditor(QWidget):
 from PyQt5.QtWidgets import QDialog, QVBoxLayout, QLabel, QPushButton, QFileDialog, QHBoxLayout, QMessageBox
 
 class SaveConfigDialog(QDialog):
+    '''A dialog window for selecting a location to save a configuration file.'''
     def __init__(self, parent=None, initialFilePath=""):
         super().__init__(parent)
         self.setWindowTitle("Save Configuration")
@@ -161,6 +144,7 @@ class SaveConfigDialog(QDialog):
         return self.filePath
 
 
+## For testing:
 def main():
     app = QApplication(sys.argv)
     ex = ConfigEditor()

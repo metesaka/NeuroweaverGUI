@@ -1,0 +1,23 @@
+contourpy==1.2.1
+cycler==0.12.1
+fonttools==4.53.0
+futures==3.0.5
+kiwisolver==1.4.5
+matplotlib==3.9.0
+numpy==1.26.4
+packaging==24.0
+pillow==10.3.0
+psutil==6.0.0
+pyparsing==3.1.2
+PyQt5==5.15.10
+PyQt5-Qt5==5.15.14
+PyQt5-sip==12.13.0
+python-dateutil==2.9.0.post0
+pyzmq==26.0.3
+scipy==1.13.1
+six==1.16.0
+
+# THESE ARE REQUIRED FOR NEUROWEAVER
+# opencv-python==4.10.0.82
+# spinnaker-python @ ./spinnaker_python-4.1.0.172-cp310-cp310-macosx_13_0_arm64.whl  ## THIS IS A LOCAL FILE
+# zmq==0.0.0
