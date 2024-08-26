@@ -1,0 +1,6 @@
+{
+    "Iterations": "1500",
+    "Num Channels": "2",
+    "Save Path": ".",
+    "Rollout Steps": "4096"
+}

@@ -1,0 +1,1 @@
+{"component 1": {"Component": "dummyComponent1", "Name": "component 1", "parameters": {}, "inputs": {"dummy1": ["(1,)"]}, "outputs": {"dummy2": ["(1,)"]}, "state": {}}, "component 2": {"Component": "dummyComponent2", "Name": "component 2", "parameters": {}, "inputs": {"dummy2": ["(1,)"]}, "outputs": {"dummy3": ["(1,)"]}, "state": {}}}

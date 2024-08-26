@@ -1,0 +1,22 @@
+{
+        "dummyComponent1": {
+            "inputs" : ["dummy1"],
+            "outputs" : ["dummy2"],
+            "state": [],
+            "parameters":{},
+            "module":"hardware.dummy_module",
+            "function":"dummy1",
+            "iterationAddition": 5,
+            "kwargs":[]
+        },
+        "dummyComponent2": {
+            "inputs" : ["dummy2"],
+            "outputs" : ["dummy3"],
+            "state": [],
+            "parameters":{},
+            "module":"hardware.dummy_module",
+            "function":"dummy2",
+            "iterationAddition": 5,
+            "kwargs":[]
+        }
+}
